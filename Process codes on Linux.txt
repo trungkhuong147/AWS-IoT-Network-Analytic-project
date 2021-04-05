@@ -1,0 +1,31 @@
+============Tshark captures to JSON converting==================
+_ Have a raw Tshark capture (.TEXT), remember the name (exp. Node1.txt). Put it in the same folder as the filter script.
+_ go into Basic filter folder, run the Packet_analyzer.py (python3 packet_analyzer.py) (Suggested and re-engineered from Professor Erik Golen, Advanced OOP course)
+_ check the new file Node1_filtered.txt ( the columns should be seperated nicely)
+_ move it to Tshark filter folder
+_ Run the jsoncon.py script (JSON conversion script), this will convert the filtered Tshark into a json format (python3 jsoncon.py)
+# THIS STEP IS VITAL: Make sure to use Python3 on the conversion script, as well as open the tshark.json file and DELETE THE LAST TIME.
+# The script is not optimized, for every entry it will add a new line, which is fine but the last one is also added, therefore, it needs to be deleted.
+_ Bring the file to the iottest folder for upload
+
+
+============Uploading data to AWS IoT Core process===================
+
+The process of installing boto3 is seperated, it will not be explained or guided.
+_ Main commands to active boto3 for uploading data:
+cd boto3
+virtualenv venv
+. venv/bin/activate
+
+python -m pip install -r requirements.txt
+python -m pip install -e .
+
+python -m pip install boto3
+
+_ after running ". venv/bin/activate", change cd to iottest, run the upload_raw_aus.py (with python3) "python3 upload_raw_aus.py < Tshark.json"
+#It can takes a while (up to 5 mins) however, I tried to use "aws configure" and all Enter to somewhat refresh the credentials? it worked but not consistent.
+
+
+
+===========JUPYTER NOTEBOOK==================
+_ Current issue with panda, can't plot "string" values, only numeric values
