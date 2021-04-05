@@ -1,0 +1,43 @@
+import smtplib
+
+#allow Easy app access on Gmail security access, and allow account acess. Normally those "insecure" account or DONOTREPLY
+#https://accounts.google.com/DisplayUnlockCaptcha
+
+print ('========Abnormal new IP and Notification by Email==========')
+print ('Enter the subnet of the company network with class only, not super subnetting, for exp, 192.168.100.0 OR 172.16.0.0 OR 10.0.0.0')
+subnet = input()
+print ('Enter the CLASS, exp A, B, C, D')
+classub = input()
+
+if classub == 'A':
+    subnet2 = subnet.split('.')
+    subnetfilter = subnet2[0]  
+elif classub == 'B':
+    subnet2 = subnet.split('.')
+    subnetfilter = str(subnet2[0]) +  '.' + str(subnet2[1])  
+elif classub == 'C':
+    subnet2 = subnet.split('.')
+    subnetfilter = str(subnet2[0]) +  '.' + str(subnet2[1]) + '.' + str(subnet2[2])
+elif classub == 'D':
+    subnet2 = subnet.split('.')
+    subnetfilter = str(subnet2[0]) +  '.' + str(subnet2[1]) + '.' + str(subnet2[2]) + '.' + str(subnet2[3])
+
+#print (subnetfilter)
+#must have ~ before the startswith comman in order to make it NOT TO
+result = df.query('~sourceip.str.startswith(@subnetfilter)', engine='python').sourceip.value_counts()
+
+#pd.set_option('display.max_rows',500)
+#print(result)
+#result = ''
+
+if (len(result) != 0):
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login("tzrockzsteam@gmail.com", "trunG%^t65")
+    server.sendmail(
+      "AwsNotification@gmail.com", 
+      "trung.khuong147@gmail.com", 
+      "Abnormal new IP \n This message is from Jupyter Notebook, abnormal behavior detected \n Format is IP and Counts \n {} ".format(result))
+    server.quit()
+
+else:
+    print("There is no Abnormal IP")

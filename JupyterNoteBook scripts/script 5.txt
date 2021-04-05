@@ -1,0 +1,38 @@
+print('========= Data visualization using mathplot library =======')
+#setting the axises
+fig, ax = plt.subplots()
+ax.set(xlabel='Source IPs', ylabel='Number of packets',title='lab')
+df.sourceip.value_counts().plot.bar(legend=True)
+ax.grid()
+
+fig, ax = plt.subplots()
+ax.set(xlabel='Dest IPs', ylabel='avg. Length',title='lab')
+df.destinationip.value_counts().plot.line(legend=False)
+ax.grid()
+
+fig, ax = plt.subplots()
+ax.set(xlabel='Source IPs', ylabel='Number of packets',title='lab')
+df.protocol.value_counts().plot.bar(legend=True)
+ax.grid()
+
+fig, ax = plt.subplots()
+ax.set(xlabel='Source IPs', ylabel='Number of packets',title='lab')
+df.time_date.value_counts().plot.bar(legend=True)
+ax.grid()
+
+
+print('========= Data visualization with timestamp index =======')
+df2 = pd.read_csv(dataset_url)
+df2['timestamp'] = df2['time_date'] + " "+ df2['time_hours']
+#print (df2.timestamp)
+df2['timestamp'] = pd.to_datetime(df2['timestamp'], dayfirst=True, errors='coerce') # convert column to datetime object
+df2.set_index('timestamp', inplace=True) # set column 'date' to index
+
+#print (df2.index.max())
+#print (df2.index.min())
+
+#%matplotlib inline
+plt.rcParams["figure.figsize"] = (10,4)
+plt.title("ll packets by 10 min Interval", fontsize = 12)
+bgroups = df2.groupby(pd.Grouper(freq='10min'))
+bgroups.size().plot()

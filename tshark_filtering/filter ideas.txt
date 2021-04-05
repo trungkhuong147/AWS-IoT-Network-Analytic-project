@@ -1,0 +1,32 @@
+_ total of destinations / sources/ protocols
+_ The amount of times that a source/ destination was detinated (Which one has the highest traffic)
+_ MAC filtering (NOT POSSIBLE SINCE THERE IS NO MAC FIELD IN THE DATASET), how many IP is associated with 1 MAC address (DHCP could be an issue) but what if a device is statically designed.
+
+_ total bytes sent by sources / received by destinations (to figuring out the heavy traffic nodes in the network)
+_ Filtering by locations / sites (might not be feasiable)
+
+_ Enable a detail statistic for a specific address (might include total % of traffic compared to everything, packet size, amount...), and then project the possible outcomes
+_ Compared 2 IPs to one another for better info.
+
+===The alogirthim for BOT NET behaviors detection (Based on the information gathered in the dataset)===
+
+_ a specific IP source that has the most packet sent. (Or enter an IP)
+_ abnormal protocol of a packet detected compared to the whole network. (port > 1024) (Network failure types packets because they have long durations, overlooked, more than 50% of total)
+_ Average "small length" and "constant" of the IP compared to the whole average. (according to [11] smaller size is better to maintain the connection between the hosts, < 400 bytes)
+_ TCP or UDP data processing [11], there might be a pattern in the packet's data
+_ Time element, is it during rush hour?
+_ It is a server node (?)
+========================================================
+
+[11] https://www.hindawi.com/journals/jcnc/2020/9024726/?fbclid=IwAR0MwofnpfqHCG7uyXx_u0v0CYBkL3EahwnqpEVep71-fiGe1K5IPxSl1Ts
+
+
+===== NETWORK ANALYTIC==========
+_ Correlation: 
+host ip has most tcp send (by source) is normally a server node.
+IP with the most traffic, with min and max length close to one another, info_cont3 unique values must be larger than 5, might be BOT NET possitive.
+
+
+https://www.sigite.org/?p=1117
+http://ictc.org/
+http://www.icssa.events/conf/submission/

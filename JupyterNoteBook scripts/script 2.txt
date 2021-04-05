@@ -1,0 +1,17 @@
+print('========= General Data statistic =======')
+
+print('Average Length: ', df.length.mean())
+print('Number of samples: ', len(df))
+print('===========================================================')
+
+print('Total Source IPs: ')
+print( df.sourceip.value_counts())
+print('===========================================================')
+
+print('Total Destination IPs: ')
+print( df.destinationip.value_counts())
+print('===========================================================')
+
+print('Total Source Protocols: ')
+print( df.protocol.value_counts())
+print('===========================================================')

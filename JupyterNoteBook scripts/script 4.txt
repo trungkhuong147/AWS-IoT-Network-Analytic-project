@@ -1,0 +1,124 @@
+print ('========BOTNET algorithm==========')
+print ('Enter option: 1 for manual IP input, 2 for the highest source IP count')
+option = input()
+if (option == '1'):
+    ipmax = input()
+if (option == '2'):
+    ipmax = df['sourceip'].value_counts().idxmax()
+    
+ipmaxcount = df.query('sourceip == @ipmax').sourceip.count()    
+print('The chosen IP is: ', ipmax, ' with the total of ', ipmaxcount, 'packets')
+checklist1 = 0
+checklist2 = 0
+checklist3 = 0
+checklist4 = 0
+checklist5 = 0
+
+print ('\n======CHECK LIST 1: Abnormal / Network failure packet comparison======')
+#network failure, try ip 192.168.1.117
+totalfailure  = df.query('info_cont1 == "Report"').info_cont2.count()
+ipfailure = df.query('info_cont1 == "Report" & sourceip == @ipmax').info_cont2.count()
+ipfailper = (ipfailure / totalfailure) * 100
+print ('The ',ipmax, ' has ', format(ipfailper,'.0f' ),'% of total network failure - ',ipfailure,' to ',totalfailure)
+print ('If ', ipmax, 'has more than 50% network failure compared to the whole traffic, it will be considered a botnet behavior ')
+if ((ipfailure / totalfailure) * 100 > 0.5 ):
+    checklist1 = 1
+    
+print ('\n======CHECK LIST 2: Length average and frequency comparison======')
+#Length average and frequency
+lenIPall = df.length.mean()
+lenipmax = df.query('sourceip == @ipmax').length.mean()
+lencomm = df['length'].value_counts().idxmax()
+print ('The most common length of the packet in the dataset is: ', format(lencomm, '.0f'), ' bytes')
+print ('The average length of ',ipmax, ' is around ', format((lenipmax / lenIPall) * 100, '.0f') ,'% of the whole dataset average length -', format(lenipmax, '.0f'), ' to ',format(lenIPall, '.0f'))
+
+#if the average length of the host is around 50% to 150% of the length of the most common length, then it will be considered as a botnet behavior.
+lencompare = (lenipmax / lencomm) * 100
+
+if ( 50 <= lencompare <= 150 ):
+    checklist2 = 1
+    print ('The host ',ipmax, 'is within the botnet detection range: ', format(lencompare, '.0f'), '% of the most common length ', format(lencompare, '.0f'), ' bytes to ',lencomm, 'bytes')
+else:
+    print ('The host ',ipmax, 'is NOT within the botnet detection range: ', format(lencompare, '.0f'), '% of the most common length ', format(lencomm, '.0f'), ' bytes to ', lencomm, 'bytes')
+
+print ('\n======CHECK LIST 3: TCP and UDP data filtering======')
+#Check how many TCP and UDP packet does the host has
+iptcp = df.query('protocol == "TCP" & sourceip == @ipmax').protocol.count()
+ipudp = df.query('protocol == "UDP" & sourceip == @ipmax').protocol.count()
+print ('The host ',ipmax, ' has: ',iptcp, ' TCP packets and ',ipudp, ' UDP packets in total')
+
+#TCP and UDP data filtering , there should be a BOT command inside the TCP UDP payload
+#192.168.1.122 for TCP trait and 192.168.1.179 for UDP trait
+if (iptcp > 0):
+    tcpcount = df.query('protocol == "TCP" & sourceip == @ipmax & info_cont4 == "Seq=619"').info_cont4.count()
+    if ( tcpcount > 0):
+        print ('The host ',ipmax, ' has TCP trait for botnet Seq=619, with ', tcpcount, ' packets out of ',iptcp, ' total packets')
+        checklist3 = 1
+    else:
+        print ('The host ',ipmax, ' has TCP packets but no trait for botnet Seq=619')
+else:           
+    print ('The host ',ipmax, ' has no TCP packets')
+
+if (ipudp > 0):
+    udpcount = df.query('protocol == "UDP" & sourceip == @ipmax & info_cont3 == "Len=58"').info_cont3.count()
+    if ( udpcount > 0):
+        print ('The host ',ipmax, ' has UDP trait for botnet Len=58, with ', udpcount, ' packets out of ',ipudp, ' total packets')
+        checklist3 = 1
+    else:
+        print ('The host ',ipmax, ' has UDP packets but no trait for botnet Len=58')
+else:           
+    print ('The host ',ipmax, ' has no UDP packets')
+        
+print ('\n======CHECK LIST 4: Time date, rush hour check======')
+print ('Please enter time date, format YYYY-MM-DD, exp 1970-01-01')
+timedate = input()
+print ('Please enter time hours, format HH:MM:SS, exp 19:30:00')
+timehours = input()
+# Remember, the time on AWS IOT is 00:00:00 but on CSV file is 12:00:00
+thfilter = timehours[:2]
+
+print ('The time filter to hour only is: ',thfilter)
+
+tdipmax=df.query('time_date == @timedate & sourceip ==@ipmax' ).time_date.count()
+thcount = df.query('sourceip ==@ipmax & time_date == @timedate & time_hours.str.startswith(@thfilter)', engine='python').sourceip.count()
+print ('The host ',ipmax, ' has ', tdipmax,' packets on ', timedate)
+print ('The host ',ipmax, 'also has ',thcount,'packets that falls within the entered rush hour.')
+
+#BOTNET behavior might be more visible during rush hours since it is trying to "blend-in", but it is not always true
+if (thcount > 0):
+    checklist4 = 1
+
+print ('\n======CHECK LIST 5: Server node======')
+print ('Is this host a server node? Enter 1 for Yes, and 2 for No')
+servernode = input()
+
+if (servernode == '1'):
+    print ('This ', ipmax, ' is a server node.')
+    
+else:
+    print ('This ', ipmax, ' is NOT a server node.')
+    checklist5 = 1
+    
+print ('\n======Final calculation======')
+
+totalcheck = ((checklist1 + checklist2 + checklist3 + checklist4 + checklist5) / 5) * 100
+print ('This ', ipmax, ' has around ', totalcheck, '% of having BOTNET behaviors.')
+print ('Please enter 1 for detail or anything else to skip')
+
+detail = input()
+if (detail == '1'):
+    if checklist1 == 1:
+        print ('This ', ipmax, ' shown Abnormal / Network failures packets BOTNET behavior. - POSITIVE')
+    if checklist2 == 1:
+        print ('This ', ipmax, ' shown Length average and frequency BOTNET behavior.- POSITIVE')
+    if checklist3 == 1:
+        print ('This ', ipmax, ' shown TCP and UDP data filtering BOTNET behavior. - POSITIVE')
+    if checklist4 == 0:
+        print ('This ', ipmax, ' shown high traffic NOT during rush hour. ')
+    elif checklist4 == 1:  
+        print ('This ', ipmax, ' shown high traffic during rush hour - POSITIVE ')
+    if checklist5 == 1:
+        print ('This ', ipmax, ' is NOT a server node.  - POSITIVE')
+    elif checklist5 == 0:
+        print ('This ', ipmax, ' is a server node.')
+#print (checklist1,checklist2,checklist3,checklist4,checklist5)

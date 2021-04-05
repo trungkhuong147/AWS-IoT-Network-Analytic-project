@@ -1,0 +1,67 @@
+print('========= Intermidiate Data statistic & Data analytic =======')
+print('Address details, enter an source IP address and it will display the % compared to everything else ')
+ip = input()
+#variables
+sourceIPA = df.query('sourceip == @ip').sourceip.count()
+destIPA = df.query('destinationip == @ip').destinationip.count()
+lenIPA = df.query('sourceip == @ip').length.mean()
+
+sourceIPall = df.sourceip.count()
+destIPall = df.destinationip.count()
+lenIPall = df.length.mean()
+#print ('The ',ip, ' has been used as source IP for ', sourceIPA, 'times')
+#print ('The ',ip, ' has been used as dest IP for ', destIPA, 'times')
+#print ('The ',ip, ' has an average length of ', lenIPA, 'bytes')
+
+#print ('Total source IP counts,  ', sourceIPall)
+#print ('Total dest IP counts,  ', destIPall)
+#print ('Total average length,  ', lenIPall)
+
+#calculations
+sourceIPresult =(sourceIPA / sourceIPall) * 100
+destIPresult =(destIPA / destIPall) * 100
+lenIPresult =(lenIPA / lenIPall) * 100
+print ('Percentage of source IP: ',ip, ' compared to the rest of the dataset is: ',format(sourceIPresult, '.2f'), '% ', sourceIPA, 'to ', sourceIPall)
+print ('Percentage of destination IP: ',ip, ' compared to the rest of the dataset is: ',format(destIPresult, '.2f'), '% ', destIPA, 'to ', destIPall)
+print ('Percentage of average length of source IP: ', ip, ' compared to the rest of the dataset is: ',format(lenIPresult, '.0f'), '% ', format(lenIPA, '.0f'), 'to ', format(lenIPall, '.0f'))
+print('Please enter a protocol to compare, case sensitive')
+protocol = input()
+protIPA = df.query('protocol == @protocol & sourceip == @ip').protocol.count()
+#print ('The ',ip, ' has sent ', protIPA, 'times with ', protocol, ' type')
+protIPall = df.query('protocol == @protocol').protocol.count()
+protIPresult =(protIPA / protIPall) * 100
+print ('Percentage of : ',ip, protocol,'protocol compared to the rest of ', protocol, ' packets in the dataset is: ',format(protIPresult, '.0f'), '% ', protIPA, 'to ', protIPall)
+print('===========================================================')
+print('Please enter another IP address for comparison ')
+ip2 = input()
+sourceIPB = df.query('sourceip == @ip2').sourceip.count()
+destIPB = df.query('destinationip == @ip2').destinationip.count()
+lenIPB = df.query('sourceip == @ip2').length.mean()
+protIPB = df.query('protocol == @protocol & sourceip == @ip2').protocol.count()
+#print (protIPB)
+
+print ('To prevent divided by 0, if any value is 0, it will be replaced by 1')
+
+if sourceIPB == 0:
+    sourceIPB = 1 
+if destIPB == 0:
+    destIPB = 1 
+if lenIPB == 0:
+    lenIPB = 1 
+if protIPB == 0:
+    protIPB = 1
+    
+source2IPresult =(sourceIPA / sourceIPB) * 100
+dest2IPresult =(destIPA / destIPB) * 100
+len2IPresult =(lenIPA / lenIPB) * 100
+prot2IPresult =(protIPA / protIPB) * 100
+
+print ('IP ',ip, ' is around: ',format(source2IPresult, '.0f'), '%', 'of ', ip2, ' in term of source ips. ', sourceIPA, 'to ', sourceIPB)
+print ('IP ',ip, ' is around: ',format(dest2IPresult, '.0f'), '%', 'of ', ip2, ' in term of destination ips. ', destIPA, 'to ', destIPB)
+print ('IP ',ip, ' is around: ',format(len2IPresult, '.0f'), '%', 'of ', ip2, ' in term of average length. ', format(lenIPA, '.0f'), 'to ', format(lenIPB, '.0f'))
+print ('IP ',ip, ' is around: ',format(prot2IPresult, '.0f'), '%', 'of ', ip2, ' in term of protocols. ', protIPA, 'to ', protIPB)
+#print('Amount of times a address has sent a type of packet - Sourceip and Protocol filtering and counting')
+#ip = input()
+#protocol = input()
+#print(ip, ' has sent ', df.query('sourceip == @ip & protocol == @protocol').destinationip.count(), ' times, with packet type', protocol)
+#print(ip, ' has been an destination ip for ', df.query('destinationip == @ip').destinationip.count(), ' times ')
