@@ -1,25 +1,33 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
 print('========= Data visualization using mathplot library =======')
 #setting the axises
 fig, ax = plt.subplots()
 ax.set(xlabel='Source IPs', ylabel='Number of packets',title='lab')
+plt.xlabel('Source IPs', fontsize=24)
+plt.title('lab', fontsize=24)
+plt.ylabel('Number of packets', fontsize=22) #size sets
+#ax.set_xbound(lower=1, upper=5) #Limit x values
+#ax.set_xlim((left, right))
 df.sourceip.value_counts().plot.bar(legend=True)
+fig.set_size_inches(18.5, 10.5) #Size changes
+#fig.savefig('test2png.png', dpi=100) #save the fig
 ax.grid()
+plt.xticks(fontsize=14,rotation=75) #size and rotation of x values
+x = np.random.randint(low=0, high=50, size=100)
+plt.xticks(np.arange(0, len(x)+1, 3)) #Change the tick of the x axis, this is 2 steps
 
 fig, ax = plt.subplots()
 ax.set(xlabel='Dest IPs', ylabel='avg. Length',title='lab')
 df.destinationip.value_counts().plot.line(legend=False)
+plt.xticks(rotation=90) #ROtate x labels
 ax.grid()
 
 fig, ax = plt.subplots()
 ax.set(xlabel='Source IPs', ylabel='Number of packets',title='lab')
 df.protocol.value_counts().plot.bar(legend=True)
 ax.grid()
-
-fig, ax = plt.subplots()
-ax.set(xlabel='Source IPs', ylabel='Number of packets',title='lab')
-df.time_date.value_counts().plot.bar(legend=True)
-ax.grid()
-
 
 print('========= Data visualization with timestamp index =======')
 df2 = pd.read_csv(dataset_url)
@@ -33,6 +41,7 @@ df2.set_index('timestamp', inplace=True) # set column 'date' to index
 
 #%matplotlib inline
 plt.rcParams["figure.figsize"] = (10,4)
-plt.title("ll packets by 10 min Interval", fontsize = 12)
-bgroups = df2.groupby(pd.Grouper(freq='10min'))
+plt.title("All packets by 5 min Interval", fontsize = 12)
+bgroups = df2.groupby(pd.Grouper(freq='5min'))
+
 bgroups.size().plot()
