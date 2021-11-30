@@ -32,7 +32,7 @@ result = df.query('~sourceip.str.startswith(@subnetfilter)', engine='python').so
 
 if (len(result) != 0):
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    server.login("tzrockzsteam@gmail.com", "trunG%^t65")
+    server.login("tzrockzsteam@gmail.com", "password")
     server.sendmail(
       "AwsNotification@gmail.com", 
       "trung.khuong147@gmail.com", 
